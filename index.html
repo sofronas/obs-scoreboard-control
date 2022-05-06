@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="el">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>Scoreboard</title>
+
+        <style>
+            .centerd{text-align: center;}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10 centerd"><h1>Πίνακας Ελέγχου</h1></div>
+                    <div class="col-md-1"></div>
+                </div>
+                <hr>
+            </div>
+            <div class="row centerd">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-5"><p><img class="img" style="float: center;" width="100px" height="100px" src="Super_League_Greece_logo.svg.PNG"/></p></div>
+                <div class="col-lg-5"><h2>Super League</h2></div>
+                <div class="col-lg-1"></div>
+            </div>
+            <hr>
+            <div class="container centerd">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <table class="table">
+                                  <tr>
+                                    <td><img class="rounded" src="home.png" height="100px"/></td>
+                                    <td><label id="score_home_team">0</label></td>
+                                  </tr>
+                                  <tr>
+                                      <td><input type="text" class="form-control" id="home_name"></td>
+                                      <td><button type="button" class="btn btn-success" onclick="homeName();">Save</button></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <table class="table">
+                                  <tr>
+                                      <td colspan="4"><label id="minutes">00</label>:<label id="seconds">00</label></td>
+                                  </tr>
+                                  <tr></tr>
+                                  <tr>
+                                      <td colspan="2"><button id="start_time" type="button" class="btn btn-primary" onclick="set_timer();">Start</button></td>
+                                      <td><button id="stop_time" type="button" class="btn btn-danger" onclick="stop_timer();">Stop</button></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row centerd">
+                            <table class="table">
+                                <tr>
+                                    <td><label id="score_away_team">0</label></td>
+                                    <td><img class="rounded" src="away.png" height="100px"/></td>
+                                </tr>
+                                <tr>
+                                    
+                                    <td><button type="button" class="btn btn-success" onclick="awayName();">Save</button></td>
+                                    <td><input type="text" class="form-control" id="away_name"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="container centerd">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Home Team</h3>
+                        <hr>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Away Team</h3>
+                        <hr>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col"><button type="button" class="btn btn-primary" onclick="homeTeamMinusScore();">-</button></div>
+                            <div class="col"><button type="button" class="btn btn-success" onclick="homeTeamUpScore();">+</button></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col"><button type="button" class="btn btn-danger" onclick="awayTeamMinusScore();">-</button></div>
+                            <div class="col"><button type="button" class="btn btn-success" onclick="awayTeamUpScore();">+</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="container centerd">
+                <footer>
+                    <div class="row">
+                        <div class="col"></div>
+                        <div class="col">Sofronas Konstantinos Sotirios</div>
+                        <div class="col"></div>   
+                    </div>
+                </footer>
+            </div>
+            
+        </div>
+
+        <!-- Javascript Section -->
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+        <!-- JS Time up -->
+        <script>
+            totalSeconds = 0;
+            function setTime(minutesLabel, secondsLabel) {
+                totalSeconds++;
+                secondsLabel.innerHTML = pad(totalSeconds%60);
+                minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+                var xhttp = new XMLHttpRequest();
+                var link = "write.php";
+                var time = minutesLabel.innerHTML + ":" + secondsLabel.innerHTML;
+                link = link + "?file=time.txt&score=" + time;
+                
+                // console.log(link);
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState === 4 && this.status === 200){
+                        console.log(this.responseText);
+                    }
+                }
+                xhttp.open("GET", link);
+                xhttp.send();
+            }
+            function set_timer() {
+                minutesLabel = document.getElementById("minutes");
+                secondsLabel = document.getElementById("seconds");
+                my_int = setInterval(function() { setTime(minutesLabel, secondsLabel)}, 1000);
+            }
+            function stop_timer() {
+                clearInterval(my_int);
+            }
+            function pad(val) {
+                var valString = val + "";
+                if (valString.length < 2) {
+                    return "0" + valString;
+                } else {
+                    return valString;
+                }
+            }
+            function homeTeamUpScore(){
+                var x = document.getElementById("score_home_team").textContent;
+                document.getElementById("score_home_team").innerHTML = Number(x) + 1;
+                var xhttp = new XMLHttpRequest();
+                var link = "write.php";
+                var score = Number(x) + 1;
+                link = link + "?file=score_home_team.txt&score=" + score;
+                
+                // console.log(link);
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState === 4 && this.status === 200){
+                        console.log(this.responseText);
+                    }
+                }
+                xhttp.open("GET", link);
+                xhttp.send();
+            }
+            function homeTeamMinusScore(){
+                var x = document.getElementById("score_home_team").textContent;
+                if((Number(x) -1) >= 0){
+                    document.getElementById("score_home_team").innerHTML = Number(x) - 1;
+                    var xhttp = new XMLHttpRequest();
+                    var link = "write.php";
+                    var score = Number(x) - 1;
+                    link = link + "?file=score_home_team.txt&score=" + score;
+                    
+                    // console.log(link);
+                    xhttp.onreadystatechange = function(){
+                        if(this.readyState === 4 && this.status === 200){
+                            console.log(this.responseText);
+                        }
+                    }
+                    xhttp.open("GET", link);
+                    xhttp.send();
+                } else {
+                    document.getElementById("score_home_team").innerHTML = 0;
+                    var xhttp = new XMLHttpRequest();
+                    var link = "write.php";
+                    var score = 0;
+                    link = link + "?file=score_home_team.txt&score=" + score;
+                    
+                    // console.log(link);
+                    xhttp.onreadystatechange = function(){
+                        if(this.readyState === 4 && this.status === 200){
+                            console.log(this.responseText);
+                        }
+                    }
+                    xhttp.open("GET", link);
+                    xhttp.send();
+                }
+            }
+            function awayTeamUpScore(){
+                var x = document.getElementById("score_away_team").textContent;
+                document.getElementById("score_away_team").innerHTML = Number(x) + 1;
+                var xhttp = new XMLHttpRequest();
+                var link = "write.php";
+                var score = Number(x) + 1;
+                link = link + "?file=score_away_team.txt&score=" + score;
+                
+                // console.log(link);
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState === 4 && this.status === 200){
+                        console.log(this.responseText);
+                    }
+                }
+                xhttp.open("GET", link);
+                xhttp.send();
+            }
+            function awayTeamMinusScore(){
+                var x = document.getElementById("score_away_team").textContent;
+                if((Number(x) -1) >= 0){
+                    document.getElementById("score_away_team").innerHTML = Number(x) - 1;
+                    var xhttp = new XMLHttpRequest();
+                    var link = "/write.php";
+                    var score = Number(x) - 1;
+                    link = link + "?file=score_away_team.txt&score=" + score;
+                    
+                    xhttp.onreadystatechange = function(){
+                        if(this.readyState === 4 && this.status === 200){
+                            console.log(this.responseText);
+                        }
+                    }
+                    xhttp.open("GET", link);
+                    xhttp.send();
+                } else {
+                    document.getElementById("score_away_team").innerHTML = 0;
+                    var xhttp = new XMLHttpRequest();
+                    var link = "write.php";
+                    var score = 0;
+                    link = link + "?file=score_away_team.txt&score=" + score;
+                    
+                    xhttp.onreadystatechange = function(){
+                        if(this.readyState === 4 && this.status === 200){
+                            console.log(this.responseText);
+                        }
+                    }
+                    xhttp.open("GET", link);
+                    xhttp.send();
+                }
+            }
+            function homeName(){
+                var home = document.getElementById("home_name").value;
+                var xhttp = new XMLHttpRequest();
+                var link = "write.php";
+                link = link + "?file=home_name.txt&score=" + home;
+                
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState === 4 && this.status === 200){
+                        console.log(this.responseText);
+                    }
+                }
+                xhttp.open("GET", link);
+                xhttp.send();
+            }
+            function awayName(){
+                var away = document.getElementById("away_name").value;
+                var xhttp = new XMLHttpRequest();
+                var link = "write.php";
+                link = link + "?file=away_name.txt&score=" + away;
+                
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState === 4 && this.status === 200){
+                        console.log(this.responseText);
+                    }
+                }
+                xhttp.open("GET", link);
+                xhttp.send();
+            }
+        </script>
+    </body> 
+</html>
